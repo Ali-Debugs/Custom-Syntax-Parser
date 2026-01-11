@@ -1,0 +1,9 @@
+// ERROR 1: MISSING TOKEN ERROR
+// Missing closing parenthesis in if condition (line 13)
+// This demonstrates: syntax error, unexpected token
+voidcharm testMissingToken () {
+    numspell x = 10 $
+    ifcharm ( x > 5  {
+        reveal "Error: Missing closing paren" $
+    }
+}

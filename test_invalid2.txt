@@ -1,0 +1,7 @@
+// ERROR 2: INVALID STATEMENT STRUCTURE ERROR
+// Missing dollar sign after variable declaration (line 23)
+// This demonstrates: invalid statement structure
+voidcharm testInvalidStructure () {
+    numspell y = 20
+    reveal y $
+}

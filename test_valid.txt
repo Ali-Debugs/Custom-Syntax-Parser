@@ -1,0 +1,165 @@
+house WizardData {
+    numspell studentid $
+    textspell housename $
+    floatspell gpa $
+    truthcharm isenrolled $
+}
+
+house SpellStats {
+    numspell powerLevel $
+    floatspell accuracy $
+}
+
+numspell globalCounter = 100 $
+floatspell magicConstant = 3.14159 $
+
+voidcharm beginmagic () {
+    numspell x = 10 $   
+    numspell y = 20 $
+    numspell z $
+    floatspell pi = 3.14 $
+    textspell greeting = "Hello Wizard" $
+    truthcharm isActive = 1 $
+    
+    reveal "Testing all language features" $
+    reveal greeting $
+    
+    x = y + 5 $
+    z = x * y - 10 $
+    pi = pi / 2.0 $
+    
+    x #+ $
+    y #- $
+    
+    ifcharm ( x > 5 ) {
+        reveal "x is greater than 5" $
+        x = x + 1 $
+    }
+    
+    ifcharm ( y < 100 ) {
+        reveal "y is less than 100" $
+        y #+ $
+    } elsecharm {
+        reveal "y is not less than 100" $
+        y #- $
+    }
+    
+    ifcharm ( x #= 11 ) {
+        reveal "x equals 11" $
+    } elsecharm {
+        reveal "x does not equal 11" $
+    }
+    
+    ifcharm ( x #! 50 ) {
+        reveal "x is not equal to 50" $
+    }
+    
+    numspell counter = 0 $
+    loopcharm ( counter < 5 ) {
+        reveal "Loop iteration" $
+        reveal counter $
+        counter #+ $
+        
+        ifcharm ( counter #= 3 ) {
+            reveal "Skipping iteration 3" $
+            skipcurse $
+        }
+        
+        ifcharm ( counter > 10 ) {
+            breakcurse $
+        }
+    }
+    
+    spellcycle ( numspell i = 0 $ i < 10 $ i #+ ) {
+        reveal "Spellcycle iteration" $
+        reveal i $
+        
+        ifcharm ( i #= 5 ) {
+            reveal "Reached 5, breaking" $
+            breakcurse $
+        }
+    }
+    
+    spellcycle ( numspell j = 1 $ j <= 20 $ j = j + 2 ) {
+        reveal j $
+    }
+    
+    numspell a = 5 $
+    numspell b = 10 $
+    numspell c $
+    
+    c = a + b * 2 $
+    c = (a + b) * 2 $
+    c = a - b / 2 $
+    c = a % 3 $
+    
+    floatspell result = 0.0 $
+    result = pi * 2.5 $
+    result = result + 1.5e10 $
+    result = -5.5 $
+    
+    ifcharm ( (a > 3) && (b < 15) ) {
+        reveal "Both conditions true" $
+    }
+    
+    ifcharm ( (a #= 5) || (b #= 20) ) {
+        reveal "At least one condition true" $
+    }
+    
+    ifcharm ( !(a > 100) ) {
+        reveal "a is not greater than 100" $
+    }
+    
+    ifcharm ( a <= 10 ) {
+        reveal "a less than or equal to 10" $
+    }
+    
+    ifcharm ( b >= 5 ) {
+        reveal "b greater than or equal to 5" $
+    }
+    
+    numspell inputval $
+    listen inputval $
+    reveal inputval $
+    
+    returncharm 0 $
+}
+
+numspell testFunction (numspell param1 , floatspell param2) {
+    numspell localVar = param1 + 10 $
+    floatspell localFloat = param2 * 2.0 $
+    
+    reveal "Inside test function" $
+    reveal localVar $
+    
+    ifcharm ( localVar > 50 ) {
+        returncharm localVar $
+    } elsecharm {
+        returncharm 0 $
+    }
+}
+
+floatspell calculatePower (numspell base , numspell exponent) {
+    floatspell result = 1.0 $
+    numspell i $
+    
+    spellcycle ( i = 0 $ i < exponent $ i #+ ) {
+        result = result * base $
+    }
+    
+    returncharm result $
+}
+
+voidcharm displayMessage () {
+    reveal "This is a void function" $
+    reveal "No return value" $
+    returncharm $
+}
+
+truthcharm checkCondition (numspell value) {
+    ifcharm ( value > 0 ) {
+        returncharm 1 $
+    } elsecharm {
+        returncharm 0 $
+    }
+}
