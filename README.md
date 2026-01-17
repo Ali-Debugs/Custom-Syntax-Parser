@@ -8,7 +8,6 @@ A **lexical and syntax analyzer** for a Harry Potter-inspired language using **F
 
 - **Lexer**: keywords (`numspell`, `textspell`, `floatspell`, `truthcharm`, etc.), identifiers, numbers, strings/chars, operators. Detects invalid tokens, bad numbers, unclosed strings/chars, and comments.
 - **Parser**: functions, houses (struct-like), variables, loops, conditionals, expressions. Syntax-only with detailed error reporting.
-- Outputs `tokens.txt` (tokens) and `errors.log` (errors).
 
 ---
 
