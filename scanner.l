@@ -10,7 +10,7 @@ int last_line_length = 0;
 
 /* For standalone lexer mode & Parser error counting */
 int token_count = 0;
-int error_counter = 0; // Defined here, used by parser via extern
+int error_counter = 0;
 
 FILE* token_file = NULL;
 FILE* error_file = NULL;
@@ -110,14 +110,12 @@ INVALID_OP      "#"[^=+\-!]|"#"
 "listen"            { print_token("KEYWORD", yytext); return LISTEN; }
 
     /* operators - multi-char first to avoid conflicts */
-"#="                { print_token("OPERATOR", yytext); return COMP_EQ; }
+"#="                { print_token("OPERATOR", yytext); return EQ_OP; }
 "#+"                { print_token("OPERATOR", yytext); return INC_OP; }
 "#-"                { print_token("OPERATOR", yytext); return DEC_OP; }
-"#!"                { print_token("OPERATOR", yytext); return COMP_NEQ; }
+"#!"                { print_token("OPERATOR", yytext); return NEQ_OP; }
 "<="                { print_token("OPERATOR", yytext); return LE_OP; }
 ">="                { print_token("OPERATOR", yytext); return GE_OP; }
-"=="                { print_token("OPERATOR", yytext); return EQ_OP; }
-"!="                { print_token("OPERATOR", yytext); return NEQ_OP; }
 "&&"                { print_token("OPERATOR", yytext); return AND_OP; }
 "||"                { print_token("OPERATOR", yytext); return OR_OP; }
 
@@ -130,8 +128,6 @@ INVALID_OP      "#"[^=+\-!]|"#"
 "<"                 { print_token("OPERATOR", yytext); return LT_OP; }
 ">"                 { print_token("OPERATOR", yytext); return GT_OP; }
 "!"                 { print_token("OPERATOR", yytext); return NOT_OP; }
-"&"                 { print_token("OPERATOR", yytext); return BITWISE_AND; }
-"|"                 { print_token("OPERATOR", yytext); return BITWISE_OR; }
 
     /* punctuation marks */
 "$"                 { print_token("PUNCTUATOR", yytext); return DOLLAR; }
@@ -145,7 +141,7 @@ INVALID_OP      "#"[^=+\-!]|"#"
 ","                 { print_token("PUNCTUATOR", yytext); return COMMA; }
 "."                 { print_token("PUNCTUATOR", yytext); return DOT; }
 
-    /* numbers - now we ignore yylval */
+    /* numbers */
 {EXPONENTIAL}       { print_token("NUMBER_EXP", yytext); return NUMBER_EXP; }
 {FLOAT}             { print_token("NUMBER_FLOAT", yytext); return NUMBER_FLOAT; }
 {INTEGER}           { print_token("NUMBER_INT", yytext); return NUMBER_INT; }
@@ -203,101 +199,3 @@ INVALID_OP      "#"[^=+\-!]|"#"
 int yywrap() {
     return 1;
 }
-
-/* Standalone lexer mode */
-#ifdef STANDALONE_LEXER
-int main(int argc, char** argv) {
-    FILE* input_file;
-    
-    if (argc < 2) {
-        printf("Usage: %s <input_file>\n", argv[0]);
-        printf("Output will be saved to tokens.txt and errors.log\n");
-        return 1;
-    }
-    
-    input_file = fopen(argv[1], "r");
-    if (!input_file) {
-        printf("Error: Cannot open input file '%s'\n", argv[1]);
-        perror("Reason");
-        return 1;
-    }
-    
-    token_file = fopen("tokens.txt", "w");
-    if (!token_file) {
-        printf("Error: Cannot create tokens.txt\n");
-        perror("Reason");
-        fclose(input_file);
-        return 1;
-    }
-    
-    error_file = fopen("errors.log", "w");
-    if (!error_file) {
-        printf("Error: Cannot create errors.log\n");
-        perror("Reason");
-        fclose(input_file);
-        fclose(token_file);
-        return 1;
-    }
-    
-    yyin = input_file;
-    
-    fprintf(token_file, "===============================================\n");
-    fprintf(token_file, "  LEXICAL ANALYZER\n");
-    fprintf(token_file, "  Tokenization Output\n");
-    fprintf(token_file, "===============================================\n\n");
-    
-    fprintf(error_file, "===============================================\n");
-    fprintf(error_file, "  ERROR LOG\n");
-    fprintf(error_file, "  Lexical Analyzer\n");
-    fprintf(error_file, "===============================================\n\n");
-    
-    yylex();
-    
-    int actual_lines = yylineno;
-    
-    fprintf(token_file, "\n===============================================\n");
-    fprintf(token_file, "  TOKENIZATION SUMMARY\n");
-    fprintf(token_file, "===============================================\n");
-    fprintf(token_file, "Total lines processed: %d\n", actual_lines);
-    fprintf(token_file, "Total tokens recognized: %d\n", token_count);
-    fprintf(token_file, "Total errors found: %d\n", error_counter);
-    fprintf(token_file, "===============================================\n");
-    
-    if (error_counter == 0) {
-        fprintf(error_file, "No errors found!\n");
-        fprintf(error_file, "All tokens were successfully recognized.\n");
-    } else {
-        fprintf(error_file, "\n===============================================\n");
-        fprintf(error_file, "  ERROR SUMMARY\n");
-        fprintf(error_file, "===============================================\n");
-        fprintf(error_file, "Total errors found: %d\n", error_counter);
-        fprintf(error_file, "===============================================\n");
-    }
-    
-    fclose(input_file);
-    fclose(token_file);
-    fclose(error_file);
-    
-    printf("\n===============================================\n");
-    printf("  LEXICAL ANALYSIS COMPLETED\n");
-    printf("===============================================\n");
-    printf("Input file: %s\n", argv[1]);
-    printf("Output files created:\n");
-    printf("  - tokens.txt (all tokens and errors)\n");
-    printf("  - errors.log (error details only)\n");
-    printf("\n");
-    printf("Total lines processed: %d\n", actual_lines);
-    printf("Total tokens recognized: %d\n", token_count);
-    printf("Total errors found: %d\n", error_counter);
-    printf("===============================================\n");
-    
-    if (error_counter == 0) {
-        printf("SUCCESS: No errors were found!\n");
-    } else {
-        printf("WARNING: %d errors are detected. Check errors.log for details\n", error_counter);
-    }
-    printf("===============================================\n\n");
-    
-    return (error_counter == 0) ? 0 : 1;
-}
-#endif

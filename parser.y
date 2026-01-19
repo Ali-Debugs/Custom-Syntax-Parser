@@ -2,28 +2,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Function declarations
 void yyerror(const char *s);
 int yylex(void);
 
-// External variables from Lexer
 extern FILE *yyin;
-extern int yylineno;   
+extern int yylineno;
 extern char *yytext;
+
+int error_count = 0; 
 %}
 
-/* Use %error-verbose for detailed error messages */
 %error-verbose
 
-/* Tokens from lexer */
 %token NUMSPELL TEXTSPELL FLOATSPELL TRUTHCHARM VOIDCHARM
 %token BEGINMAGIC RETURNCHARM HOUSE
 %token IFCHARM ELSECHARM LOOPCHARM SPELLCYCLE
 %token BREAKCURSE SKIPCURSE REVEAL LISTEN
-%token COMP_EQ COMP_NEQ INC_OP DEC_OP
+%token INC_OP DEC_OP
 %token LE_OP GE_OP EQ_OP NEQ_OP AND_OP OR_OP
 %token PLUS MINUS MULT DIV MOD ASSIGN_OP LT_OP GT_OP NOT_OP
-%token BITWISE_AND BITWISE_OR
 %token DOLLAR LBRACE RBRACE LPAREN RPAREN LBRACKET RBRACKET SEMICOLON COMMA DOT
 %token NUMBER_INT NUMBER_FLOAT NUMBER_EXP
 %token IDENTIFIER STRING_LITERAL CHAR_LITERAL
@@ -32,7 +29,7 @@ extern char *yytext;
 %right ASSIGN_OP
 %left OR_OP
 %left AND_OP
-%left EQ_OP NEQ_OP COMP_EQ COMP_NEQ LT_OP GT_OP LE_OP GE_OP
+%left EQ_OP NEQ_OP LT_OP GT_OP LE_OP GE_OP
 %left PLUS MINUS
 %left MULT DIV MOD
 %right NOT_OP INC_OP DEC_OP
@@ -172,8 +169,6 @@ Expression:
     | Expression AND_OP Expression
     | Expression EQ_OP Expression
     | Expression NEQ_OP Expression
-    | Expression COMP_EQ Expression
-    | Expression COMP_NEQ Expression
     | Expression LT_OP Expression
     | Expression GT_OP Expression
     | Expression LE_OP Expression
@@ -185,14 +180,14 @@ Expression:
     | Expression MOD Expression
     | NOT_OP Expression
     | MINUS Expression %prec UMINUS
-    | IDENTIFIER INC_OP
-    | IDENTIFIER DEC_OP
+    | IDENTIFIER INC_OP 
+    | IDENTIFIER DEC_OP 
     | NUMBER_INT
     | NUMBER_FLOAT
     | NUMBER_EXP
-    | IDENTIFIER
-    | STRING_LITERAL
-    | CHAR_LITERAL
+    | IDENTIFIER 
+    | STRING_LITERAL 
+    | CHAR_LITERAL 
     | FunctionCall
     | LPAREN Expression RPAREN
     ;
@@ -213,10 +208,10 @@ ExpressionList:
 
 /* ========== TYPES ========== */
 DataType:
-    NUMSPELL
-    | TEXTSPELL
-    | FLOATSPELL
-    | TRUTHCHARM
+    NUMSPELL 
+    | TEXTSPELL 
+    | FLOATSPELL 
+    | TRUTHCHARM 
     ;
 
 %%
@@ -224,7 +219,10 @@ DataType:
 /* ========================================================== */
 /* ERROR HANDLING LOGIC */
 /* ========================================================== */
+
 void yyerror(const char *s) {
+    error_count++; 
+    
     fprintf(stderr, "\n========================================\n");
     fprintf(stderr, "LINE NUMBER: %d\n", yylineno);
     fprintf(stderr, "ERROR: %s\n", s);
@@ -247,13 +245,14 @@ int main(int argc, char **argv) {
     fprintf(stderr, "SYNTAX ANALYSIS COMPLETE\n");
     fprintf(stderr, "========================================\n");
     
-    if (parse_status == 0) {
+    if (parse_status == 0 && error_count == 0) {
         fprintf(stderr, "Status: Syntax analysis successful\n");
         printf("Syntax analysis successful\n");
         fprintf(stderr, "========================================\n");
         return 0;
     } else {
         fprintf(stderr, "Status: Failed\n");
+        fprintf(stderr, "Total Errors Found: %d\n", error_count);
         fprintf(stderr, "========================================\n");
         return 1;
     }
