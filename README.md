@@ -25,3 +25,4 @@ A **lexical and syntax analyzer** for a Harry Potter-inspired language using **F
 bison -d parser.y
 flex scanner.l
 gcc parser.tab.c lex.yy.c -o parser
+./parser filneame.txt
